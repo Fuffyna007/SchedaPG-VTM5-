@@ -17,9 +17,9 @@ let selezioni = [];
 let contatoreDiscipline = 0;
 let contatoreVantaggi = 0;
 
-// CONFIGURAZIONE DISCORD OAUTH2 (Sostituisci con le tue info da Discord Developer Portal)
-const DISCORD_CLIENT_ID = "IL_TUO_DISCORD_CLIENT_ID";
-const WORKER_URL = "https://tuo-worker.workers.dev/check-roles"; // Endpoint del worker che controlla i ruoli
+// CONFIGURAZIONE DISCORD OAUTH2
+const DISCORD_CLIENT_ID = "1532491337499283717"; // Il Client ID della tua app Discord
+const WORKER_URL = "check-ruoli-discord.cronacheedadi.workers.dev"; // Es: https://check-ruoli-discord.tuonome.workers.dev
 
 let utentePremium = false; // Diventa true se possiede i ruoli abbonati
 
