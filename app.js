@@ -278,13 +278,11 @@ function gestisciFame() {
 }
 
 // TIRO DADI CON REGOLE UFFICIALI V5
-async function eseguiTiroDadi() {
+function eseguiTiroDadi() {
   const riservaTotale = selezioni.reduce((acc, curr) => acc + curr.valore, 0);
 
   if (riservaTotale === 0) {
-    const err = "Seleziona almeno una voce con punteggio maggiore di 0!";
-    if (window.OBR) OBR.notification.show(err);
-    else alert(err);
+    alert("Seleziona almeno una voce con punteggio maggiore di 0!");
     return;
   }
 
@@ -326,14 +324,12 @@ async function eseguiTiroDadi() {
   }
 
   const etichettaTiro = selezioni.map(s => s.nome).join(" + ");
-  const nomePlayer = (window.OBR && OBR.player) ? await OBR.player.getName() : "Giocatore";
 
-  const msg = `🎲 ${nomePlayer} [${etichettaTiro}]\n` +
+  const msg = `🎲 TIRO DADI [${etichettaTiro}]\n` +
               `ESITO: ${successiTotali} Successi${tipoEsito}\n` +
               `---------------------------------\n` +
               `⚫ Dadi Normali (${dadiNormali}): [ ${risNormali.join(" , ")} ]\n` +
               `🔴 Dadi Fame (${dadiFame}): [ ${risFame.join(" , ")} ]`;
 
-  if (window.OBR) OBR.notification.show(msg);
-  else alert(msg);
+  alert(msg);
 }
