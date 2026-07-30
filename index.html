@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <title>Scheda Vampiri V5 - Dinamica</title>
+  <style>
+    body {
+      background-color: #121212;
+      color: #e0e0e0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      padding: 12px;
+      margin: 0;
+      user-select: none;
+    }
+
+    h1 {
+      color: #8b0000;
+      text-align: center;
+      margin: 0 0 10px 0;
+      font-size: 1.3rem;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      border-bottom: 2px solid #8b0000;
+      padding-bottom: 5px;
+    }
+
+    .sezione {
+      background-color: #1e1e1e;
+      border: 1px solid #333;
+      border-radius: 6px;
+      padding: 10px;
+      margin-bottom: 12px;
+    }
+
+    .titolo-sezione {
+      color: #a93226;
+      font-size: 0.85rem;
+      font-weight: bold;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+      border-bottom: 1px solid #333;
+      padding-bottom: 3px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    /* Anagrafica & Campi Testo */
+    .griglia-anagrafica {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+    }
+
+    .campo-testo {
+      display: flex;
+      flex-direction: column;
+      font-size: 0.75rem;
+      color: #aaa;
+    }
+
+    .campo-testo input, .campo-testo textarea {
+      background: #111;
+      border: 1px solid #444;
+      color: #fff;
+      padding: 4px 6px;
+      border-radius: 3px;
+      font-size: 0.8rem;
+      font-family: inherit;
+    }
+
+    .campo-testo textarea {
+      resize: vertical;
+      min-height: 40px;
+    }
+
+    /* Griglie 3 Colonne */
+    .griglia-3 {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 8px;
+    }
+
+    .colonna-titolo {
+      font-size: 0.75rem;
+      color: #888;
+      text-transform: uppercase;
+      font-weight: bold;
+      margin-bottom: 4px;
+      text-align: center;
+    }
+
+    .riga-voce {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 4px;
+      font-size: 0.78rem;
+      cursor: pointer;
+      padding: 3px 5px;
+      border-radius: 3px;
+      border: 1px solid transparent;
+    }
+
+    .riga-voce:hover { background-color: #2a2a2a; }
+
+    .riga-voce.selezionato {
+      background-color: #5c0606;
+      border-color: #8b0000;
+      color: #fff;
+      font-weight: bold;
+    }
+
+    .pallini { font-size: 0.85rem; white-space: nowrap; }
+    .pallino { cursor: pointer; color: #444; }
+
+    /* Discipline Dinamiche */
+    .block-disciplina {
+      background: #161616;
+      border: 1px solid #2a2a2a;
+      padding: 8px;
+      border-radius: 4px;
+      margin-bottom: 8px;
+    }
+
+    .header-disciplina {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 6px;
+    }
+
+    .header-disciplina input {
+      background: transparent;
+      border: none;
+      border-bottom: 1px solid #555;
+      color: #a93226;
+      font-weight: bold;
+      font-size: 0.85rem;
+    }
+
+    .potere-row {
+      display: flex;
+      gap: 6px;
+      margin-top: 4px;
+    }
+
+    .potere-row input[type="text"] {
+      background: #111;
+      border: 1px solid #333;
+      color: #ccc;
+      font-size: 0.75rem;
+      padding: 3px;
+      border-radius: 3px;
+    }
+
+    .potere-nome { width: 35%; }
+    .potere-desc { width: 65%; }
+
+    /* Pulsanti Generici per Aggiungere */
+    .btn-add {
+      background: #2a6f40;
+      color: #fff;
+      border: none;
+      font-size: 0.75rem;
+      padding: 3px 8px;
+      border-radius: 3px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .btn-add:hover { background: #348e52; }
+
+    .btn-del {
+      background: #7a1c1c;
+      color: #fff;
+      border: none;
+      font-size: 0.7rem;
+      padding: 2px 5px;
+      border-radius: 3px;
+      cursor: pointer;
+    }
+
+    /* Tracciatori Avanzati (Salute, Volontà, Umanità) */
+    .tracciatori-container {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .box-tracciatore-10 {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #111;
+      padding: 6px 10px;
+      border-radius: 4px;
+      font-size: 0.8rem;
+    }
+
+    .griglia-caselle-10 {
+      display: flex;
+      gap: 4px;
+    }
+
+    .casella-quadrata {
+      width: 18px;
+      height: 18px;
+      border: 1px solid #666;
+      background: #222;
+      color: #ff4d4d;
+      font-weight: bold;
+      font-size: 0.8rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      user-select: none;
+      border-radius: 2px;
+    }
+
+    .casella-quadrata.piena {
+      background: #8b0000;
+      border-color: #a93226;
+    }
+
+    /* Vantaggi Dinamici */
+    .riga-vantaggio {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+      margin-bottom: 4px;
+    }
+
+    .riga-vantaggio input {
+      background: #111;
+      border: 1px solid #333;
+      color: #fff;
+      font-size: 0.75rem;
+      padding: 3px;
+      border-radius: 3px;
+    }
+
+    /* Tabella Sangue */
+    .tabella-sangue {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+    }
+
+    /* Tiro Dadi */
+    .btn-lancio {
+      width: 100%;
+      background-color: #8b0000;
+      color: white;
+      border: none;
+      padding: 10px;
+      font-weight: bold;
+      font-size: 0.9rem;
+      border-radius: 4px;
+      cursor: pointer;
+      text-transform: uppercase;
+      margin-top: 6px;
+    }
+
+    .btn-lancio:hover { background-color: #b00000; }
+
+    .btn-reset {
+      background: #333;
+      color: #ccc;
+      border: none;
+      padding: 4px 8px;
+      font-size: 0.75rem;
+      border-radius: 3px;
+      cursor: pointer;
+      margin-top: 4px;
+      width: 100%;
+    }
+
+    .info-tiro {
+      font-size: 0.8rem;
+      color: #aaa;
+      margin-top: 4px;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Vampiri: La Masquerade V5</h1>
+
+  <!-- PAGINA 1: ANAGRAFICA -->
+  <div class="sezione">
+    <div class="titolo-sezione">Informazioni Personaggio</div>
+    <div class="griglia-anagrafica">
+      <div class="campo-testo">Nome <input type="text" id="info-nome"></div>
+      <div class="campo-testo">Clan <input type="text" id="info-clan"></div>
+      <div class="campo-testo">Concetto <input type="text" id="info-concetto"></div>
+      <div class="campo-testo">Predatore <input type="text" id="info-predatore"></div>
+      <div class="campo-testo">Ambizione <input type="text" id="info-ambizione"></div>
+      <div class="campo-testo">Desiderio <input type="text" id="info-desiderio"></div>
+      <div class="campo-testo">Sire <input type="text" id="info-sire"></div>
+      <div class="campo-testo">Generazione <input type="text" id="info-generazione"></div>
+    </div>
+  </div>
+
+  <!-- STATUS, FAME E TRACCIATORI A 10 CASELLE -->
+  <div class="sezione">
+    <div class="titolo-sezione">Stato e Tracciatori</div>
+    <div class="tracciatori-container">
+      <div class="box-tracciatore-10">
+        <span style="color:#c0392b; font-weight:bold;">Fame (Hunger):</span>
+        <div id="fame-pallini" class="pallini"></div>
+      </div>
+      <div class="box-tracciatore-10">
+        <span>Salute (10 caselle):</span>
+        <div id="salute-caselle" class="griglia-caselle-10"></div>
+      </div>
+      <div class="box-tracciatore-10">
+        <span>Volontà (10 caselle):</span>
+        <div id="volonta-caselle" class="griglia-caselle-10"></div>
+      </div>
+      <div class="box-tracciatore-10">
+        <span>Umanità (10 caselle):</span>
+        <div id="umanita-caselle" class="griglia-caselle-10"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ATTRIBUTI -->
+  <div class="sezione">
+    <div class="titolo-sezione">Attributi</div>
+    <div class="griglia-3">
+      <div>
+        <div class="colonna-titolo">Fisici</div>
+        <div id="attr-fisici"></div>
+      </div>
+      <div>
+        <div class="colonna-titolo">Sociali</div>
+        <div id="attr-sociali"></div>
+      </div>
+      <div>
+        <div class="colonna-titolo">Mentali</div>
+        <div id="attr-mentali"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ABILITÀ -->
+  <div class="sezione">
+    <div class="titolo-sezione">Abilità</div>
+    <div class="griglia-3">
+      <div>
+        <div class="colonna-titolo">Fisiche</div>
+        <div id="abi-fisiche"></div>
+      </div>
+      <div>
+        <div class="colonna-titolo">Sociali</div>
+        <div id="abi-sociali"></div>
+      </div>
+      <div>
+        <div class="colonna-titolo">Mentali</div>
+        <div id="abi-mentali"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DISCIPLINE E POTERI DINAMICI -->
+  <div class="sezione">
+    <div class="titolo-sezione">
+      <span>Discipline e Poteri</span>
+      <button class="btn-add" id="btn-add-disciplina">+ Nuova Disciplina</button>
+    </div>
+    <div id="lista-discipline"></div>
+  </div>
+
+  <!-- PANNELLO DI TIRO -->
+  <div class="sezione">
+    <div class="titolo-sezione">Pannello di Tiro Dadi</div>
+    <div id="info-selezione" class="info-tiro">Seleziona fino a 2 voci qualsiasi per il tiro</div>
+    <button id="btn-tira" class="btn-lancio">Tira Dadi</button>
+    <button id="btn-reset" class="btn-reset">Azzera Selezione</button>
+  </div>
+
+  <!-- PAGINA 2: DETTAGLI & CRONACA -->
+  <h1>Dettagli & Cronaca (Pagina 2)</h1>
+
+  <!-- VANTAGGI E DIFETTI DINAMICI -->
+  <div class="sezione">
+    <div class="titolo-sezione">
+      <span>Vantaggi e Difetti</span>
+      <button class="btn-add" id="btn-add-vantaggio">+ Aggiungi Vantaggio/Difetto</button>
+    </div>
+    <div id="lista-vantaggi"></div>
+  </div>
+
+  <!-- PARAMETRI DEL SANGUE -->
+  <div class="sezione">
+    <div class="titolo-sezione">Parametri del Sangue</div>
+    <div class="tabella-sangue">
+      <div class="campo-testo">Impeto Sanguigno <input type="text" id="sangue-impeto"></div>
+      <div class="campo-testo">Danni Risanati <input type="text" id="sangue-danni"></div>
+      <div class="campo-testo">Bonus ai Poteri <input type="text" id="sangue-bonus"></div>
+      <div class="campo-testo">Ritirare Prova di Risveglio <input type="text" id="sangue-risveglio"></div>
+      <div class="campo-testo">Penalità alla Nutrizione <input type="text" id="sangue-nutrizione"></div>
+      <div class="campo-testo">Gravità della Debolezza <input type="text" id="sangue-debolezza-gravita"></div>
+    </div>
+  </div>
+
+  <!-- ESPERIENZA, ETÀ ED SANGUE -->
+  <div class="sezione">
+    <div class="titolo-sezione">Esperienza ed Età</div>
+    <div class="griglia-anagrafica">
+      <div class="campo-testo">Esperienza Totale <input type="text" id="xp-totale"></div>
+      <div class="campo-testo">Esperienza Spesa <input type="text" id="xp-spesa"></div>
+      <div class="campo-testo">Età Reale <input type="text" id="eta-reale"></div>
+      <div class="campo-testo">Età Apparente <input type="text" id="eta-apparente"></div>
+      <div class="campo-testo">Data di Nascita <input type="text" id="data-nascita"></div>
+      <div class="campo-testo">Data di Morte <input type="text" id="data-morte"></div>
+    </div>
+  </div>
+
+  <!-- ASPETTO, STORIA E CRONACA -->
+  <div class="sezione">
+    <div class="titolo-sezione">Biografia e Cronaca</div>
+    <div class="griglia-anagrafica" style="grid-template-columns: 1fr;">
+      <div class="campo-testo">Aspetto <textarea id="bio-aspetto"></textarea></div>
+      <div class="campo-testo">Elementi Distintivi <textarea id="bio-elementi"></textarea></div>
+      <div class="campo-testo">Storia <textarea id="bio-storia"></textarea></div>
+      <div class="campo-testo">Precetti della Cronaca <textarea id="bio-precetti"></textarea></div>
+      <div class="campo-testo">Punti di Riferimento e Convinzioni <textarea id="bio-convinzioni"></textarea></div>
+      <div class="campo-testo">Debolezza di Clan <textarea id="bio-debolezza"></textarea></div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@owlbear-rodeo/sdk@latest/dist/index.umd.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
