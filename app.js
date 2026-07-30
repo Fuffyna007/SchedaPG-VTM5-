@@ -21,46 +21,55 @@ let contatoreVantaggi = 0;
 const DISCORD_CLIENT_ID = "1532491337499283717";
 const WORKER_URL = "https://check-ruoli-discord.cronacheedadi.workers.dev";
 
-let utentePremium = false; // Diventa true se possiede i ruoli abbonati
+let utentePremium = false; // Diventa true se possiede i ruoli abbonati o se sei la Creatrice
 
 // INIZIALIZZAZIONE
-generaInterfaccia();
-gestisciFame();
-creaTracciatori10();
-gestisciLoginDiscord();
+document.addEventListener("DOMContentLoaded", () => {
+  generaInterfaccia();
+  gestisciFame();
+  creaTracciatori10();
+  gestisciLoginDiscord();
 
-// AGGIUNTA RIGHE INIZIALI DINAMICHE
-aggiungiDisciplina("Auspex");
-aggiungiVantaggio(); 
+  // AGGIUNTA RIGHE INIZIALI DINAMICHE
+  aggiungiDisciplina("Auspex");
+  aggiungiVantaggio(); 
 
-document.getElementById("btn-add-disciplina").addEventListener("click", () => aggiungiDisciplina("Nuova Disciplina"));
-document.getElementById("btn-add-vantaggio").addEventListener("click", () => aggiungiVantaggio());
-document.getElementById("btn-tira").addEventListener("click", eseguiTiroDadi);
-document.getElementById("btn-reset").addEventListener("click", azzeraSelezioni);
+  document.getElementById("btn-add-disciplina")?.addEventListener("click", () => aggiungiDisciplina("Nuova Disciplina"));
+  document.getElementById("btn-add-vantaggio")?.addEventListener("click", () => aggiungiVantaggio());
+  document.getElementById("btn-tira")?.addEventListener("click", eseguiTiroDadi);
+  document.getElementById("btn-reset")?.addEventListener("click", azzeraSelezioni);
 
-// PULSANTI PREMIUM E AZIONI
-document.getElementById("btn-salva-scheda").addEventListener("click", azioneSalvaScheda);
-document.getElementById("btn-carica-scheda").addEventListener("click", caricaSchedaLocale);
-document.getElementById("btn-esporta-pdf").addEventListener("click", azioneEsportaPDF);
-document.getElementById("btn-chiudi-modal").addEventListener("click", () => {
-  document.getElementById("modal-premium").style.display = "none";
+  // PULSANTI PREMIUM E AZIONI
+  document.getElementById("btn-salva-scheda")?.addEventListener("click", azioneSalvaScheda);
+  document.getElementById("btn-carica-scheda")?.addEventListener("click", caricaSchedaLocale);
+  document.getElementById("btn-esporta-pdf")?.addEventListener("click", azioneEsportaPDF);
+  document.getElementById("btn-chiudi-modal")?.addEventListener("click", () => {
+    const modal = document.getElementById("modal-premium");
+    if (modal) modal.style.display = "none";
+  });
 });
 
 function generaInterfaccia() {
   for (const tipo in ATTRIBUTI) {
     const cont = document.getElementById(`attr-${tipo}`);
-    ATTRIBUTI[tipo].forEach(nome => {
-      punteggi[nome] = 1;
-      cont.appendChild(creaRigaVoce(nome, 1));
-    });
+    if (cont) {
+      cont.innerHTML = "";
+      ATTRIBUTI[tipo].forEach(nome => {
+        punteggi[nome] = 1;
+        cont.appendChild(creaRigaVoce(nome, 1));
+      });
+    }
   }
 
   for (const tipo in ABILITA) {
     const cont = document.getElementById(`abi-${tipo}`);
-    ABILITA[tipo].forEach(nome => {
-      punteggi[nome] = 0;
-      cont.appendChild(creaRigaVoce(nome, 0));
-    });
+    if (cont) {
+      cont.innerHTML = "";
+      ABILITA[tipo].forEach(nome => {
+        punteggi[nome] = 0;
+        cont.appendChild(creaRigaVoce(nome, 0));
+      });
+    }
   }
 }
 
@@ -94,6 +103,8 @@ function aggiungiDisciplina(nomeIniziale) {
   punteggi[idDisc] = 0;
 
   const contDisc = document.getElementById("lista-discipline");
+  if (!contDisc) return;
+
   const block = document.createElement("div");
   block.className = "block-disciplina";
 
@@ -162,6 +173,8 @@ function aggiungiDisciplina(nomeIniziale) {
 function aggiungiVantaggio() {
   contatoreVantaggi++;
   const cont = document.getElementById("lista-vantaggi");
+  if (!cont) return;
+
   const riga = document.createElement("div");
   riga.className = "riga-vantaggio";
 
@@ -197,27 +210,29 @@ function creaTracciatori10() {
   const ids = ["salute-caselle", "volonta-caselle", "umanita-caselle"];
   ids.forEach(id => {
     const cont = document.getElementById(id);
-    cont.innerHTML = "";
-    for (let i = 0; i < 10; i++) {
-      const box = document.createElement("div");
-      box.className = "casella-quadrata";
-      box.dataset.stato = "0";
+    if (cont) {
+      cont.innerHTML = "";
+      for (let i = 0; i < 10; i++) {
+        const box = document.createElement("div");
+        box.className = "casella-quadrata";
+        box.dataset.stato = "0";
 
-      box.addEventListener("click", () => {
-        let st = parseInt(box.dataset.stato);
-        st = (st + 1) % 4;
-        box.dataset.stato = st.toString();
+        box.addEventListener("click", () => {
+          let st = parseInt(box.dataset.stato);
+          st = (st + 1) % 4;
+          box.dataset.stato = st.toString();
 
-        box.classList.remove("piena");
-        if (st === 0) box.textContent = "";
-        else if (st === 1) box.textContent = "/";
-        else if (st === 2) box.textContent = "X";
-        else if (st === 3) {
-          box.textContent = "";
-          box.classList.add("piena");
-        }
-      });
-      cont.appendChild(box);
+          box.classList.remove("piena");
+          if (st === 0) box.textContent = "";
+          else if (st === 1) box.textContent = "/";
+          else if (st === 2) box.textContent = "X";
+          else if (st === 3) {
+            box.textContent = "";
+            box.classList.add("piena");
+          }
+        });
+        cont.appendChild(box);
+      }
     }
   });
 }
@@ -253,6 +268,8 @@ function azzeraSelezioni() {
 
 function aggiornaTestoSelezione() {
   const info = document.getElementById("info-selezione");
+  if (!info) return;
+  
   if (selezioni.length === 0) {
     info.textContent = "Seleziona fino a 2 voci qualsiasi per il tiro";
   } else if (selezioni.length === 1) {
@@ -264,6 +281,7 @@ function aggiornaTestoSelezione() {
 }
 
 function aggiornaPalliniGenerici(contenitore, chiave, valoreCorrente, max, onChange) {
+  if (!contenitore) return;
   contenitore.innerHTML = "";
   for (let i = 1; i <= max; i++) {
     const p = document.createElement("span");
@@ -281,7 +299,8 @@ function aggiornaPalliniGenerici(contenitore, chiave, valoreCorrente, max, onCha
 }
 
 function gestisciFame() {
-  aggiornaPalliniGenerici(document.getElementById("fame-pallini"), "fame", 1, 5, (v) => valoreFame = v);
+  const cont = document.getElementById("fame-pallini");
+  if (cont) aggiornaPalliniGenerici(cont, "fame", 1, 5, (v) => valoreFame = v);
 }
 
 function eseguiTiroDadi() {
@@ -341,24 +360,27 @@ function eseguiTiroDadi() {
 }
 
 // ==========================================
-// LOGICA DISCORD OAUTH2 & CONTROLLO RUOLI
+// LOGICA DISCORD OAUTH2 & CONTROLLO RUOLI (CORRETTO)
 // ==========================================
 function gestisciLoginDiscord() {
-  const btnLogin = document.getElementById("btn-login-discord");
+  // Supporta sia btn-login-discord che btn-discord
+  const btnLogin = document.getElementById("btn-login-discord") || document.getElementById("btn-discord");
   
-  btnLogin.addEventListener("click", () => {
-    const redirectUri = encodeURIComponent(window.location.origin + window.location.pathname);
-    const scope = encodeURIComponent("identify guilds.members.read");
-    const authUrl = `https://discord.com/api/oauth2/authorize?client_id=${DISCORD_CLIENT_ID}&redirect_uri=${redirectUri}&response_type=token&scope=${scope}`;
-    window.location.href = authUrl;
-  });
+  if (btnLogin) {
+    btnLogin.addEventListener("click", () => {
+      const redirectUri = encodeURIComponent(window.location.origin + window.location.pathname);
+      const scope = encodeURIComponent("identify");
+      const authUrl = `https://discord.com/api/oauth2/authorize?client_id=${DISCORD_CLIENT_ID}&redirect_uri=${redirectUri}&response_type=token&scope=${scope}`;
+      window.location.href = authUrl;
+    });
+  }
 
   // Leggi token dall'URL dopo il redirect di Discord
   const fragment = new URLSearchParams(window.location.hash.slice(1));
   const accessToken = fragment.get("access_token");
 
   if (accessToken) {
-    window.location.hash = ""; // Pulisci URL
+    window.history.replaceState({}, document.title, window.location.pathname); // Pulisci URL in modo pulito
     vericaAbbonamentoDiscord(accessToken);
   }
 }
@@ -369,23 +391,34 @@ async function vericaAbbonamentoDiscord(token) {
     const userResp = await fetch("https://discord.com/api/users/@me", {
       headers: { Authorization: `Bearer ${token}` }
     });
+
+    if (!userResp.ok) throw new Error("Token non valido");
     const userData = await userResp.json();
 
-    document.getElementById("label-user").textContent = userData.username;
+    const labelUser = document.getElementById("label-user") || document.querySelector(".user-info span");
+    if (labelUser) labelUser.textContent = userData.username;
 
-    // 2. Invia ID utente alla tua Worker gratuita per controllare se ha il ruolo abbonato sul Server
+    // 2. Invia ID utente al Worker su Cloudflare
     const checkResp = await fetch(WORKER_URL, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ userId: userData.id })
     });
+
     const checkResult = await checkResp.json();
 
     if (checkResult.isPremium) {
-      utentePremium = true;
-      const badge = document.getElementById("badge-status");
-      badge.textContent = checkResult.roleName || "Sostenitore";
-      badge.classList.add("sbloccato");
+      utentePremium = true; // SBLOCCO COMPLETO!
+      const badge = document.getElementById("badge-status") || document.querySelector(".user-info .badge");
+      if (badge) {
+        badge.textContent = checkResult.roleName || "Sostenitore";
+        badge.classList.add("sbloccato");
+        badge.style.backgroundColor = "#28a745"; // Verde
+      }
+      alert(`Benvenuta ${userData.username}! Accesso (${checkResult.roleName}) verificato con successo!`);
+    } else {
+      utentePremium = false;
+      alert(`Ciao ${userData.username}, non risultano ruoli da Sostenitore attivi.`);
     }
   } catch (err) {
     console.error("Errore verifica Discord:", err);
@@ -397,17 +430,19 @@ async function vericaAbbonamentoDiscord(token) {
 // ==========================================
 function azioneSalvaScheda() {
   if (!utentePremium) {
-    document.getElementById("modal-premium").style.display = "flex";
+    const modal = document.getElementById("modal-premium");
+    if (modal) modal.style.display = "flex";
+    else alert("Funzionalità riservata ai Sostenitori!");
     return;
   }
 
-  // 1. Salva tutti i testi (input e textarea)
+  // 1. Salva tutti i testi
   const datiInput = {};
   document.querySelectorAll("input, textarea").forEach(el => {
     if (el.id) datiInput[el.id] = el.value;
   });
 
-  // 2. Salva lo stato dei pallini/punteggi (Attributi, Abilità, Fame, Discipline)
+  // 2. Salva lo stato dei pallini/punteggi
   const datiPunteggi = { ...punteggi, fame: valoreFame };
 
   // 3. Salva lo stato delle caselle di Salute, Volontà e Umanità
@@ -420,7 +455,7 @@ function azioneSalvaScheda() {
     }
   });
 
-  // 4. Salva la struttura delle Discipline e dei Vantaggi creati dinamicamente
+  // 4. Salva le Discipline dinamiche
   const disciplineDinamiche = [];
   document.querySelectorAll("#lista-discipline .block-disciplina").forEach(block => {
     const nome = block.querySelector(".header-disciplina input")?.value || "";
@@ -432,13 +467,13 @@ function azioneSalvaScheda() {
     disciplineDinamiche.push({ nome, poteri });
   });
 
+  // 5. Salva i Vantaggi dinamici
   const vantaggiDinamici = [];
   document.querySelectorAll("#lista-vantaggi .riga-vantaggio").forEach(riga => {
     const inputs = riga.querySelectorAll("input");
     vantaggiDinamici.push({ nome: inputs[0]?.value || "", desc: inputs[1]?.value || "" });
   });
 
-  // Pacchetto completo di salvataggio
   const pacchettoScheda = {
     inputs: datiInput,
     punteggi: datiPunteggi,
@@ -448,7 +483,16 @@ function azioneSalvaScheda() {
   };
 
   localStorage.setItem("vtm_scheda_salvata", JSON.stringify(pacchettoScheda));
-  alert("💾 Scheda completissima salvata con successo nel browser!");
+  alert("💾 Scheda salvata con successo nel browser!");
+}
+
+function azioneEsportaPDF() {
+  if (!utentePremium) {
+    const modal = document.getElementById("modal-premium");
+    if (modal) modal.style.display = "flex";
+    return;
+  }
+  window.print(); // O la tua libreria PDF
 }
 
 // ==========================================
@@ -463,7 +507,6 @@ function caricaSchedaLocale() {
 
   const pacchetto = JSON.parse(salvataggio);
 
-  // 1. Ripristina i testi delle caselle
   if (pacchetto.inputs) {
     for (const id in pacchetto.inputs) {
       const el = document.getElementById(id);
@@ -471,18 +514,15 @@ function caricaSchedaLocale() {
     }
   }
 
-  // 2. Ripristina i punteggi ed aggiorna la grafica dei pallini
   if (pacchetto.punteggi) {
     Object.assign(punteggi, pacchetto.punteggi);
     if (pacchetto.punteggi.fame !== undefined) {
       valoreFame = pacchetto.punteggi.fame;
       gestisciFame();
     }
-    // Ridisegna tutti i pallini delle sezioni statiche
     generaInterfaccia();
   }
 
-  // 3. Ripristina lo stato delle 10 caselle (Salute, Volontà, Umanità)
   if (pacchetto.tracciatori) {
     for (const idCont in pacchetto.tracciatori) {
       const cont = document.getElementById(idCont);
@@ -505,14 +545,14 @@ function caricaSchedaLocale() {
     }
   }
 
-  // 4. Ricrea le Discipline dinamiche con i loro poteri
   if (pacchetto.discipline && Array.isArray(pacchetto.discipline)) {
-    document.getElementById("lista-discipline").innerHTML = "";
+    const contDisc = document.getElementById("lista-discipline");
+    if (contDisc) contDisc.innerHTML = "";
     pacchetto.discipline.forEach(d => {
       aggiungiDisciplina(d.nome);
       const ultimoBlocco = document.querySelector("#lista-discipline .block-disciplina:last-child");
       if (ultimoBlocco && d.poteri) {
-        const contPoteri = ultimoBlocco.children[1]; // Contenitore poteri
+        const contPoteri = ultimoBlocco.children[1];
         d.poteri.forEach(p => {
           const pRow = document.createElement("div");
           pRow.className = "potere-row";
@@ -528,9 +568,9 @@ function caricaSchedaLocale() {
     });
   }
 
-  // 5. Ricrea i Vantaggi/Difetti dinamici
   if (pacchetto.vantaggi && Array.isArray(pacchetto.vantaggi)) {
-    document.getElementById("lista-vantaggi").innerHTML = "";
+    const contVant = document.getElementById("lista-vantaggi");
+    if (contVant) contVant.innerHTML = "";
     pacchetto.vantaggi.forEach(v => {
       aggiungiVantaggio();
       const ultimaRiga = document.querySelector("#lista-vantaggi .riga-vantaggio:last-child");
@@ -542,5 +582,5 @@ function caricaSchedaLocale() {
     });
   }
 
-  alert("📂 Scheda ripristinata con successo in ogni suo dettaglio!");
+  alert("📂 Scheda ripristinata con successo!");
 }
